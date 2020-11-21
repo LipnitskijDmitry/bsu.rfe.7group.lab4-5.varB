@@ -29,6 +29,7 @@ public class MainFrame extends JFrame {
 
 	private JCheckBoxMenuItem showAxisMenuItem;
 	private JCheckBoxMenuItem showMarkersMenuItem;
+	private JCheckBoxMenuItem showSpGraphicsMenuItem;
 
 	private GraphicsDisplay display = new GraphicsDisplay();
 
@@ -40,8 +41,7 @@ public class MainFrame extends JFrame {
 	DataInputStream in = new DataInputStream(
 	new FileInputStream(selectedFile));
 	
-	Double[][] graphicsData = new
-	Double[in.available()/(Double.SIZE/8)/2][];
+	Double[][] graphicsData = new Double[in.available()/(Double.SIZE/8)/2][];
 
 	int i = 0;
 	while (in.available()>0) {
@@ -82,6 +82,7 @@ public class MainFrame extends JFrame {
 			
 		showAxisMenuItem.setEnabled(fileLoaded);
 		showMarkersMenuItem.setEnabled(fileLoaded);
+		showSpGraphicsMenuItem.setEnabled(fileLoaded);
 		}
 
 		public void menuDeselected(MenuEvent e) {
@@ -100,7 +101,7 @@ public class MainFrame extends JFrame {
 		setLocation((kit.getScreenSize().width - WIDTH)/2,
 		(kit.getScreenSize().height - HEIGHT)/2);
 
-		setExtendedState(MAXIMIZED_BOTH);
+		//setExtendedState(MAXIMIZED_BOTH);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -136,8 +137,20 @@ public class MainFrame extends JFrame {
 			graphicsMenu.add(showAxisMenuItem);
 
 			showAxisMenuItem.setSelected(true);
+			
+			Action showSpGraphicsAction = new AbstractAction("Показать график |f(x)|") {
+				public void actionPerformed(ActionEvent event) {
 
-			Action showMarkersAction = new AbstractAction("Показывать маркерыточек") {
+				display.setShowSpGraphics(showSpGraphicsMenuItem.isSelected());
+				}
+				};
+				showSpGraphicsMenuItem = new JCheckBoxMenuItem(showSpGraphicsAction);
+
+				graphicsMenu.add(showSpGraphicsMenuItem);
+				
+				showAxisMenuItem.setSelected(false);
+
+			Action showMarkersAction = new AbstractAction("Показывать маркеры точек") {
 			public void actionPerformed(ActionEvent event) {
 
 			display.setShowMarkers(showMarkersMenuItem.isSelected());

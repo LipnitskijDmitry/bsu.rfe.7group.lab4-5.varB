@@ -23,6 +23,8 @@ public class GraphicsDisplay extends JPanel {
 	
 	private boolean showAxis = true;
 	private boolean showMarkers = true;
+	private boolean showSpGraphics = false;
+	
 	
 	private double minX;
 	private double maxX;
@@ -32,6 +34,7 @@ public class GraphicsDisplay extends JPanel {
 	private double scale;
 
 	private BasicStroke graphicsStroke;
+	private BasicStroke graphicsSpStroke;
 	private BasicStroke axisStroke;
 	private BasicStroke markerStroke;
 
@@ -43,6 +46,9 @@ public class GraphicsDisplay extends JPanel {
 		graphicsStroke = new BasicStroke(4.0f, BasicStroke.CAP_BUTT,
 		BasicStroke.JOIN_ROUND, 10.0f, new float[] {4,4,8,4,4,4,16,4,8,4,4,4}, 0.0f);
 
+		graphicsSpStroke = new BasicStroke(4.0f, BasicStroke.CAP_BUTT,
+		BasicStroke.JOIN_ROUND, 10.0f, new float[] {8,4}, 0.0f);
+		
 		axisStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
 		BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
 
@@ -59,6 +65,11 @@ public class GraphicsDisplay extends JPanel {
 
 	public void setShowAxis(boolean showAxis) {
 		this.showAxis = showAxis;
+		repaint();
+	}
+	
+	public void setShowSpGraphics(boolean showSpGraphics) {
+		this.showSpGraphics = showSpGraphics;
 		repaint();
 	}
 	
@@ -95,6 +106,28 @@ public class GraphicsDisplay extends JPanel {
 
 		Point2D.Double point = xyToPoint(graphicsData[i][0],
 		graphicsData[i][1]);
+		if (i>0) {
+
+		graphics.lineTo(point.getX(), point.getY());
+		} else {
+
+		graphics.moveTo(point.getX(), point.getY());
+		}
+		}
+		canvas.draw(graphics);
+	}
+	
+	protected void paintSpGraphics(Graphics2D canvas) {
+
+		canvas.setStroke(graphicsSpStroke);
+
+		canvas.setColor(Color.BLUE);
+
+		GeneralPath graphics = new GeneralPath();
+		for (int i=0; i<graphicsData.length; i++) {
+
+		Point2D.Double point = xyToPoint(graphicsData[i][0],
+		Math.abs(graphicsData[i][1]));
 		if (i>0) {
 
 		graphics.lineTo(point.getX(), point.getY());
@@ -180,7 +213,11 @@ public class GraphicsDisplay extends JPanel {
 		
 		canvas.setPaint(Color.BLACK);
 
+		
 		for (Double[] point: graphicsData) {
+			double p = point[1];
+			if( (Math.sqrt((int)p)- (int)(Math.sqrt((int)p)))!=0 ) canvas.setPaint(Color.BLACK);
+			else canvas.setPaint(Color.RED);
 
 		GeneralPath arrow = new GeneralPath();
 
@@ -195,8 +232,31 @@ public class GraphicsDisplay extends JPanel {
 		
 		canvas.draw(arrow); 
 		canvas.fill(arrow); 
+			
+		}
+		if( showSpGraphics ) {
+			for (Double[] point: graphicsData) {
+				double p = Math.abs(point[1]);
+				if( (Math.sqrt((int)p)- (int)(Math.sqrt((int)p)))!=0 ) canvas.setPaint(Color.BLACK);
+				else canvas.setPaint(Color.RED);
+
+			GeneralPath arrow = new GeneralPath();
+
+			Point2D.Double center = xyToPoint(point[0], p);
+			arrow.moveTo(center.getX(),center.getY()+9);
+			arrow.lineTo(center.getX()-5.5,center.getY()-2);
+
+			arrow.lineTo(center.getX()+5.5,center.getY()-2);
+
+			arrow.closePath();
+			
+			
+			canvas.draw(arrow); 
+			canvas.fill(arrow); 
 		}
 		}
+		}
+
 
 	public void paintComponent(Graphics g) {
 	
@@ -246,8 +306,13 @@ public class GraphicsDisplay extends JPanel {
 		if (showAxis) paintAxis(canvas);
 
 		paintGraphics(canvas);
+		
+		if( showSpGraphics ) paintSpGraphics(canvas);
 
-		if (showMarkers) paintMarkers(canvas);
+		if (showMarkers) 
+			{
+			    paintMarkers(canvas);
+			}
 
 		canvas.setFont(oldFont);
 		canvas.setPaint(oldPaint);
