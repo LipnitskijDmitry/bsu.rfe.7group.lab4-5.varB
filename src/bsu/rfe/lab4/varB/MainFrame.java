@@ -36,44 +36,44 @@ public class MainFrame extends JFrame {
 	private boolean fileLoaded = false;
 
 	protected void openGraphics(File selectedFile) {
-	try {
+	  try {
 		
-	DataInputStream in = new DataInputStream(
-	new FileInputStream(selectedFile));
+	    DataInputStream in = new DataInputStream(
+	    new FileInputStream(selectedFile));
 	
-	Double[][] graphicsData = new Double[in.available()/(Double.SIZE/8)/2][];
+	    Double[][] graphicsData = new Double[in.available()/(Double.SIZE/8)/2][];
 
-	int i = 0;
-	while (in.available()>0) {
+	    int i = 0;
+	    while (in.available()>0) {
 
-	Double x = in.readDouble();
+	     Double x = in.readDouble();
 
-	Double y = in.readDouble();
+	      Double y = in.readDouble();
 
-	graphicsData[i++] = new Double[] {x, y};
-	}
+	      graphicsData[i++] = new Double[] {x, y};
+	    }
 
-	if (graphicsData!=null && graphicsData.length>0) {
+	      if (graphicsData!=null && graphicsData.length>0) {
 
-	fileLoaded = true;
+	      fileLoaded = true;
 
-	display.showGraphics(graphicsData);
-	}
+	      display.showGraphics(graphicsData);
+	   }
 
-	in.close();
-	} catch (FileNotFoundException ex) {
+	   in.close();
+	  } catch (FileNotFoundException ex) {
 
-	JOptionPane.showMessageDialog(MainFrame.this,
-	"Указанный файл не найден", "Ошибка загрузки данных",
-	JOptionPane.WARNING_MESSAGE);
-	return;
-	} catch (IOException ex) {
+	    JOptionPane.showMessageDialog(MainFrame.this,
+	    "Указанный файл не найден", "Ошибка загрузки данных",
+	    JOptionPane.WARNING_MESSAGE);
+	    return;
+	  } catch (IOException ex) {
 
-	JOptionPane.showMessageDialog(MainFrame.this,
-	"Ошибка чтения координат точек из файла",
-	"Ошибка загрузки данных", JOptionPane.WARNING_MESSAGE);
-	return;
-	}
+	    JOptionPane.showMessageDialog(MainFrame.this,
+	    "Ошибка чтения координат точек из файла",
+	    "Ошибка загрузки данных", JOptionPane.WARNING_MESSAGE);
+	    return;
+	  }
 	}
 
 	private class GraphicsMenuListener implements MenuListener {
@@ -93,15 +93,13 @@ public class MainFrame extends JFrame {
 		}
 
 	public MainFrame() {
-		super("Построение графиков функций на основе подготовленных файлов");
+		super("Построение графиков функций на основе подготовленных файлов и обработка событий мыши");
 
 		setSize(WIDTH, HEIGHT);
 		Toolkit kit = Toolkit.getDefaultToolkit();
 
 		setLocation((kit.getScreenSize().width - WIDTH)/2,
 		(kit.getScreenSize().height - HEIGHT)/2);
-
-		//setExtendedState(MAXIMIZED_BOTH);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -110,21 +108,22 @@ public class MainFrame extends JFrame {
 		menuBar.add(fileMenu);
 
 		Action openGraphicsAction = new AbstractAction("Открыть файл") {
-		public void actionPerformed(ActionEvent event) {
-		if (fileChooser==null) {
-		fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File("."));
-		}
-		if (fileChooser.showOpenDialog(MainFrame.this) ==
-		JFileChooser.APPROVE_OPTION)
-		openGraphics(fileChooser.getSelectedFile());
-		}
+		  public void actionPerformed(ActionEvent event) {
+		    if (fileChooser==null) {
+		      fileChooser = new JFileChooser();
+		      fileChooser.setCurrentDirectory(new File("."));
+		    }
+		    if (fileChooser.showOpenDialog(MainFrame.this) ==
+		      JFileChooser.APPROVE_OPTION)
+		      openGraphics(fileChooser.getSelectedFile());
+		    }
 		};
 
 		fileMenu.add(openGraphicsAction);
 
 		JMenu graphicsMenu = new JMenu("График");
 		menuBar.add(graphicsMenu);
+		graphicsMenu.addMenuListener(new GraphicsMenuListener());
 		
 		Action showAxisAction = new AbstractAction("Показывать оси координат") {
 			public void actionPerformed(ActionEvent event) {
@@ -161,7 +160,7 @@ public class MainFrame extends JFrame {
 
 			showMarkersMenuItem.setSelected(false);
 			
-			graphicsMenu.addMenuListener(new GraphicsMenuListener());
+			
 			getContentPane().add(display, BorderLayout.CENTER);
 
 
